@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: simple-url-shortener
+    runtime: python
+    plan: starter            # persistent disks require a paid instance type
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --access-logfile -
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: DATABASE_PATH
+        value: /var/data/urls.db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_DEBUG
+        value: "0"
+    disk:
+      name: urls-data
+      mountPath: /var/data
+      sizeGB: 1
